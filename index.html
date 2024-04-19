@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Dictionary</a>
+    </nav>
+
+    <main class="container text-center my-5">
+        <div class="p-4 shadow-sm">
+            <h2 class="mb-4">Word Search</h2>
+            <input type="text" id="wordInput" class="form-control mb-4" placeholder="Enter a word...">
+            <button id="searchWord" class="btn btn-primary">Search</button>
+            <div id="definition-container" class="mt-4"></div>
+        </div>
+    </main>
+
+    <footer class="footer bg-dark text-light text-center py-3">
+        <span>© 2024 Dictionary. All rights reserved.</span>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('searchWord').addEventListener('click', fetchDefinition);
+        });
+
+        async function fetchDefinition() {
+            const word = document.getElementById('wordInput').value;
+            if (!word) {
+                document.getElementById('definition-container').innerText = 'Please enter a word.';
+                return;
+            }
+            document.getElementById('definition-container').innerText = 'Loading...';
+            try {
+                const url = `Your_File_Path/api.php?word=${encodeURIComponent(word)}`;
+                const response = await fetch(url);
+                const json = await response.json();
+                if (json.length > 0 && json[0].meanings) {
+                    displayDefinition(json[0].meanings[0].definitions[0].definition);
+                } else {
+                    throw new Error('No definitions found');
+                }
+            } catch (error) {
+                console.error('Error fetching definition:', error);
+                document.getElementById('definition-container').innerText = 'Failed to load the definition. Please try again later.';
+            }
+        }
+
+        function displayDefinition(definition) {
+            const definitionText = document.getElementById('definition-container');
+            definitionText.innerHTML = `<p class="mb-0">${definition}</p>`;
+        }
+    </script>
+</body>
+</html>
